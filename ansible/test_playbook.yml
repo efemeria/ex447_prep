@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+  gather_facts: no
+  become: yes
+  
+  tasks:
+    - name: Install httpd
+      yum: 
+        name: httpd
+        state: latest
+
+    - name: print a var
+      debug:
+        msg: "{{ ansible_play_hosts }}"
