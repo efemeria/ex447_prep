@@ -1,0 +1,7 @@
+server_main.example.com
+
+[group1]
+server[01:03].example.com
+
+[group2]
+another.example.com
