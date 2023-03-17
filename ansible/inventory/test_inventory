@@ -4,4 +4,4 @@ server_main.example.com
 server[01:03].example.com
 
 [group2]
-another.example.com
+another.test.com
