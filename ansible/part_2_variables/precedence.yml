@@ -1,0 +1,26 @@
+---
+# try out variable precedence (define them in a few files)
+# try passing some vars with command line
+
+- hosts: all
+  gather_facts: no
+  
+  vars: 
+    - ansible_hostname: example.com
+    - ansible_user: tommy
+  
+  vars_files:
+    - ./vars_files/external_vars.yml
+
+  tasks:
+    - name: Print out ansible_hostname
+      debug:
+        var: ansible_hostname
+
+    - name: Print out ansible_user
+      debug:
+        var: ansible_user
+
+    - name: Print out colour
+      debug:
+        var: colour

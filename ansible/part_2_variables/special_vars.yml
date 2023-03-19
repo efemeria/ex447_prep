@@ -1,0 +1,26 @@
+---
+# Testing out special vars
+
+- hosts: all
+
+  tasks: 
+  
+  - name: print hostname (we gather it in facts)
+    debug:
+      var: ansible_hostname
+
+  - name: print connection port
+    debug:
+      msg: "The connection port is {{ ansible_port }}"
+  
+  - name: print ansible host and inventory name
+    debug:
+      msg: "{{ item }}"
+    loop:
+      - "{{ inventory_hostname  }}"
+      - "{{ ansible_host  }}"
+ 
+  - name: print inventory name for another host
+    debug:
+      var: hostvars['node02']['ansible_host']
+    run_once: True 

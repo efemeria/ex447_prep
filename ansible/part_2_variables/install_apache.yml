@@ -1,0 +1,52 @@
+---
+# install Apache on a server
+- hosts: webservers
+  become: yes
+  
+  tasks: 
+  - name: Install Apache
+    yum:
+      name: httpd
+      state: present
+        
+  - name: Enable Apache
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+
+  - name: Populate index
+    copy:
+      dest: "/var/www/html/index.html"
+      content: Hello World!
+
+  - name: Open firewall if firewalld is being used
+    firewalld:
+      service: httpd
+      state: enabled
+      immediate: true
+      permanent: true
+    tags: firewall
+
+  - name: Check if shit works
+    uri:
+      url: http://{{ ansible_host }}
+      method: GET
+      timeout: 30
+      status_code: 200
+      return_content: yes
+    delegate_to: localhost
+    register: content_result
+      
+  - name: print debug of uri module
+    debug:
+      var: content_result
+  
+  - name: uninstall Apache
+    yum: 
+      name: httpd
+      state: absent
+    tags:
+      - never
+      - uninstall
+    
