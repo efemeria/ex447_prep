@@ -1,0 +1,38 @@
+---
+#Try out conditionals
+#Use command line for last var
+
+- hosts: all
+  become: yes
+
+  tasks:
+  - name: Install vim with yum if server is Centos
+    yum:
+      name: vim
+      state: present
+    when: ansible_distribution == "CentOS"
+
+  - name: Install vim with apt if server is Debian or Ubuntu
+    apt:
+      name: vim
+      state: present
+    when: (ansible_distribution == "Ubuntu") or (ansible_distribution == "Debian")
+
+  - name: Print "Hello world" if multiple conditions are met
+    debug:
+      msg: "Hello world"
+    when:
+      - '"webservers" in group_names'
+      - ansible_distribution == "CentOS"
+
+  - name: Install provided service, ignore if not provided 
+    yum:
+      name: "{{ required_service | default(omit) }}"
+      state: present
+    register: installation_result
+    changed_when: installation_result.rc != 2
+
+  - name: Fail if a script doesn't exist
+    shell: "./home/etc/non_existent_script.sh"
+    register: shell
+    failed_when: ('No such file or directory' in shell.stderr) or shell.rc == 0

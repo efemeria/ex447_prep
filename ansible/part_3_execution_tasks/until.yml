@@ -1,0 +1,29 @@
+---
+# Run until smth happens
+- hosts: all
+  gather_facts: no
+  tasks:
+
+    - name: Validate that 'at' is installed
+      yum:
+        name: at
+        state: latest
+
+    - name: Start atd
+      service:
+        name: atd
+        enabled: yes
+        state: started
+
+    - name: Schedule a task
+      at:
+       command: df -h > /tmp/diskspace
+       count: 2
+       units: minutes
+      
+    - name: Validate if the task was executed
+      command: atq
+      register: atq_result
+      until: atq_result.stdout | length == 0
+      delay: 15
+      retries: 10

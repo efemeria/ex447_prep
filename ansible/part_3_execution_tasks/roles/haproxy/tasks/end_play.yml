@@ -1,0 +1,4 @@
+---
+- name: Print out stopping a play statement
+  debug:
+    msg: "A Haproxy play has stopped"

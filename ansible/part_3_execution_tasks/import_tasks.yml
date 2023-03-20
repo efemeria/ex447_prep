@@ -1,0 +1,23 @@
+---
+#Checking how importing tasks works
+#Tasks are imported on the role itself
+- hosts: all
+  become: true
+  strategy: free
+
+  roles:
+    - name: haproxy
+      tags: haproxy
+
+- name: Include Galaxy playbook
+  import_playbook: ansible_galaxy.yml
+  tags: galaxy
+
+- hosts: all
+  become: true
+  
+  tasks: 
+    - name: Ensure apache is at the latest version
+      yum:
+        name: httpd
+        state: latest

@@ -1,0 +1,11 @@
+---
+- hosts: all
+  become: yes
+  remote_user: admin
+  become_method: sudo
+  
+  tasks:
+  - name: Create a random user
+    user:
+      name: user
+      groups: other_users

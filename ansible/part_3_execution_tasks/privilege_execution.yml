@@ -1,0 +1,60 @@
+---
+#Trying out privilege escalation
+- hosts: all
+  gather_facts: no
+
+  vars_files:
+    - ./vault/secret.yml
+  
+  tasks:
+
+  - name: Create a group
+    group:
+      name: other_users
+      state: present
+    become: yes
+
+  - name: Create users (used later for testing)
+    user:
+      name: "{{ item }}"
+      groups: other_users
+      append: yes
+    become: yes
+    loop:
+      - user1
+      - user2
+
+  - name: Create another user for a wheel group
+    user:
+      name: admin
+      groups: wheel
+      password: "{{ user_password | password_hash('sha512') }}"
+    become: yes
+
+  - name: see what's the pass
+    debug:
+      msg: "{{ user_password | password_hash('sha512') }}"
+
+  - name: Create a group
+    group:
+      name: apache
+      state: present
+    become: yes
+
+  - name: Add Apache user to the Apache group
+    user:
+      groups: apache
+      name: apache
+    become: yes
+
+  - name: Execute a task as a user1
+    command: haproxy -v
+    become: yes
+    become_user: user1
+    become_method: sudo
+
+  - name: Execute a task as Nobody
+    command: whoami
+    become: true
+    become_method: sudo
+    become_user: nobody

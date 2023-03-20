@@ -1,0 +1,27 @@
+---
+#Testing out various tags
+- hosts: all
+  become: yes
+
+  vars:
+    name: john  
+
+  pre_tasks:
+
+  - name: Check if there is sufficient amount of RAM
+    shell: grep MemTotal /proc/meminfo | awk '{print $2}'
+    register: RAM
+    failed_when: RAM.stdout | int <= 900000
+    tags: always
+
+  - name: Print RAM number
+    debug:
+      msg: "{{ RAM.stdout }}"
+    tags: always
+  
+  roles:  
+
+  - name: haproxy
+    tags: never, haproxy
+  - name: nginx
+    tags: nginx

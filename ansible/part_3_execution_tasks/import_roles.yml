@@ -1,0 +1,15 @@
+---
+- hosts: all
+  become: yes
+  
+  roles:
+    - name: haproxy
+      tags: haproxy
+  
+    - name: example_role
+      tags: test
+
+  tasks:
+  - name: Notify that roles have been imported
+    debug:
+      msg: "Roles have been imported"

@@ -1,0 +1,49 @@
+---
+# Create an user and add permissions to visudo for the said user
+- hosts: all
+  become: yes
+  become_method: su
+
+  tasks:
+  - name: Create School group
+    group:
+      name: school
+      state: present
+
+  - name: Create user for Sam
+    user:
+      name: sam
+      groups: school
+  
+  - name: Add sudo permissions to School peep
+    lineinfile:
+      dest: /etc/sudoers
+      state: present
+      regexp: '^%school'
+      line: '%school ALL=(ALL) NOPASSWD: ALL'
+      validate: visudo -cf %s
+  
+  - name: Create a file owned by Sam
+    file:
+      path: /tmp/text.txt
+      state: touch
+      owner: sam
+      group: school
+      mode: 0700
+
+  - name: Write in file as Sam
+    lineinfile:
+      path: /tmp/text.txt
+      line: "Hello World, I'm Sam"
+    become: sam
+
+  - name: Execute a command as Sam
+    command: netstat -r -n
+    become: sam
+    become_method: sudo
+
+  - name: Delete the file
+    file:
+      path: /tmp/text.txt
+      state: absent 
+    tags: [ never, delete ]

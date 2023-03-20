@@ -1,0 +1,62 @@
+---
+#try out combining pre, post tasks, role inclusion, etc
+- hosts: all
+  become: yes
+  order: reverse_sorted
+
+  vars:
+    file_name: example01  
+
+  pre_tasks:
+
+    - name: Install PHP
+      yum:
+        name: php
+        state: latest
+      notify: php_installed 
+  
+  roles:
+    - name: haproxy
+      notify: restart_daemon
+
+  tasks:
+  
+    - name: Create a file
+      file:
+        path: "/tmp/{{ file_name }}.txt"
+        state: touch
+   
+    - name: Type in file
+      lineinfile:
+        path: "/tmp/{{ file_name }}.txt"
+        line: "Hello World"
+      notify: file_created
+      
+  post_tasks:
+    - name: Delete the file
+      file:
+        path: "/tmp/{{ file_name }}.txt"
+        state: absent
+      notify: file_deleted
+
+  handlers:
+    - name: Notify that the file was created
+      debug:
+        msg: "File was created"
+      listen: file_created
+
+    - name: Notify that the file was deleted
+      debug:
+        msg: "File was deleted"
+      listen: file_deleted
+
+    - name: Restart Daemon
+      service:
+        name: daemon
+        state: restarted
+      listen: restart_daemon
+
+    - name: Celebrate that PHP is installed
+      debug:
+        msg: "yay, PHP is installed"
+      listen: php_installed

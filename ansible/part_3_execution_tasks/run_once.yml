@@ -1,0 +1,16 @@
+---
+#Run a task just once
+- hosts: webservers
+  gather_facts: no
+  
+  tasks:
+
+  - name: Get a hostname base
+    set_fact:
+      hostname: "{{ inventory_hostname[:4] }}"
+    run_once: true
+
+  - name: Print hostname base
+    debug:
+      msg: "Base hostname of {{ group_names[0] }} is {{ hostname }}"
+    run_once: true

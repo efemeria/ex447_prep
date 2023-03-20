@@ -1,0 +1,24 @@
+---
+#try out debug strategy
+- hosts: all
+  gather_facts: no
+  strategy: debug
+
+  tasks:
+  
+  - name: Restart Apache service
+    service:
+      name: httpd
+      state: restarted
+    
+  - name: Fail this task (we didn't gather facts)
+    debug:
+      var: ansible_hostname
+
+  - name: Execute a hostname command
+    command: hostname
+    register: hostname
+
+  - name: Print the hostname on debug
+    debug:
+      var: hostname.stdout

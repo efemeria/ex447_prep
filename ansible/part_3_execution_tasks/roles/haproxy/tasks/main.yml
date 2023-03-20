@@ -1,0 +1,37 @@
+---
+# tasks file for haproxy
+- import_tasks: start_play.yml
+  tags: start
+
+- name: install socat and haproxy packages
+  yum:
+    name:
+      - socat
+      - haproxy
+    state: present
+
+- name: Enable haproxy
+  service:
+    name: haproxy
+    enabled: yes
+    state: started
+
+- name: Print Haproxy version
+  command: haproxy -v
+  register: haproxy_version
+
+- name: Print Haproxy version
+  debug:
+    var: haproxy_version
+
+- name: Ensure haproxy configuration is ok
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    mode: 0644
+    validate: haproxy -f %s -c -q
+  notify: restart_haproxy
+  ignore_errors: true
+
+- include_tasks: end_play.yml
+  tags: end

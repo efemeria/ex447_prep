@@ -1,0 +1,15 @@
+---
+# tasks file for nginx
+- import_tasks: installation.yml
+  tags: install
+
+- import_tasks: start_nginx.yml
+  tags: startup
+
+- name: Include the example role
+  include_role:
+    name: example_role
+
+- name: Print out congratulations message
+  debug:
+    msg: "Congratulations {{ name }}, Nginx was successfully installated!"

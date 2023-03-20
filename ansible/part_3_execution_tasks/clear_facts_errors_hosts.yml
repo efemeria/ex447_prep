@@ -1,0 +1,36 @@
+---
+#try out clearing facts and clearing errors
+#learned that 
+- hosts: all
+  gather_facts: true
+  
+  tasks:
+
+  - name: Create foo.txt on only one host
+    file:
+      dest: /tmp/foo.txt
+      state: touch
+    run_once: true
+
+  - name: append 'Hello World' to /tmp/foo.txt
+    lineinfile:
+      path: /tmp/foo.txt
+      line: Hello World
+  
+  - meta: clear_host_errors
+#this doesn't work for some reason
+
+  - name: Print a fact
+    debug:
+      var: ansible_distribution
+
+  - name: Do not continue if it is Debian
+    meta: end_play
+    when: ansible_distribution == "Debian"
+
+  - meta: clear_facts
+
+  - name: See if facts now fail
+    debug:
+      var: ansible_hostname
+    ignore_errors: true

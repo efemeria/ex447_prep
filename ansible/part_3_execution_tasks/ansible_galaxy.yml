@@ -1,0 +1,11 @@
+---
+#Install a role from ansible galaxy
+
+- hosts: localhost
+  gather_facts: no
+  become: yes
+
+  tasks:
+  
+  - name: Install a role
+    command: ansible-galaxy install elastic.elasticsearch

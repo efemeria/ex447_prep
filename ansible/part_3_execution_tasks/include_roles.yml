@@ -1,0 +1,13 @@
+---
+#include a role instead of importing it, see if it can access vars
+- hosts: all
+  become: True
+  gather_facts: no
+  serial: 1
+
+  vars:
+    name: John
+  
+  roles:
+    - name: nginx
+      tags: nginx
