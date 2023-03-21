@@ -1,0 +1,63 @@
+---
+#collect info from one server, delegate it to another
+- hosts: all
+  
+  tasks:
+
+  - name: Perform a local action (make sure pip is installed)
+    local_action:
+      module: yum
+      name: python-pip
+      state: latest
+    run_once: true
+    tags: [ never, setup ]
+
+  - name: Perform a local action (make sure netaddr is installed)
+    local_action:
+      module: pip
+      name: netaddr
+    run_once: true
+    tags: [ never, setup ]
+
+  - name: Install epel-release
+    yum:
+      name: epel-release
+      state: latest
+
+  - name: Create a directory for storing information
+    file:
+      state: directory
+      path: /tmp/ansible/
+    delegate_to: localhost
+    run_once: true
+
+  - name: Create files
+    file:
+      state: touch
+      path: "/tmp/ansible/{{ inventory_hostname }}"
+    delegate_to: localhost
+
+  - name: Store gateway address in files
+    lineinfile:
+      line: "{{ ansible_default_ipv4.gateway | ipv4 }}"
+      path: "/tmp/ansible/{{ inventory_hostname }}"
+    delegate_to: localhost
+
+  - name: Read those files
+    debug:
+      msg: "{{ lookup('file', '/tmp/ansible/' + inventory_hostname) }}"
+    tags: tmp
+     
+  - name: Add a hosts file
+    file:
+      state: touch
+      path: /tmp/ansible/current_hosts
+    run_once: true
+    delegate_to: localhost
+
+  - name: Add current hosts to it
+    lineinfile:
+      path: /tmp/ansible/current_hosts
+      line: "{{ ansible_play_hosts_all }}"
+    run_once: true
+    delegate_to: localhost

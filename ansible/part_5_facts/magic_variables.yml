@@ -1,0 +1,22 @@
+---
+#using some of the magical variables
+- hosts: all
+  
+  tasks:
+    - name: Print out information about this playbook
+      debug:
+        msg: "This playbook has {{ ansible_forks }} forks, the inventory being used is {{ ansible_inventory_sources }} and the hosts running these tasks are {{ ansible_play_hosts }}"
+    
+    - name: Check if ansible version is ok
+      meta: end_play
+      when: ansible_version.major < 2
+
+    - name: Check your favorite colour
+      debug:
+        msg: "My favorite colour is {{ hostvars['node01']['colour'] }}"
+      run_once: true
+
+    - name: Check if inventory is properly labeled
+      debug: 
+        msg: "Inventory is properly labeled"
+      when: '"inventory" in inventory_file'

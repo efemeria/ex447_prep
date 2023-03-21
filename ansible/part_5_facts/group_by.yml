@@ -1,0 +1,37 @@
+---
+# group by OS and other facts
+- hosts: all
+
+  tasks:
+  
+  - name: Group by OS
+    group_by:
+      key: server_{{ ansible_distribution }}
+ 
+  - name: Group all active servers
+    group_by:
+      key: everyone
+
+- hosts: server_CentOS
+
+  tasks:
+
+  - name: Install Perl on CentOS
+    yum:
+      name: perl
+      state: latest
+
+- hosts: server_Debian
+
+  tasks:
+
+  - name: Install Perl on Debian
+    apt:
+      name: perl
+      state: latest
+
+- hosts: everyone
+
+  tasks: 
+    - name: Ping all servers
+      ping:

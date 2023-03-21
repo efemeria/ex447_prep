@@ -1,0 +1,16 @@
+---
+#register outputs during a loop, access them outside of the loop
+- hosts: localhost
+  
+  tasks:
+  
+  - name: execute a command in loop
+    shell: "nc -v -z {{ item }} 22"
+    register: ping
+    with_items: "{{ groups['webservers'] }}"
+
+  - name: Say pong if the server was reachable
+    debug:
+      msg: "PONG!"
+    when: '"Connection timed out" not in item.stdout'
+    loop: "{{ ping.results }}"

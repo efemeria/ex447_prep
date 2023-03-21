@@ -1,0 +1,9 @@
+---
+#just using various ansible facts
+- hosts: all
+  gather_facts: true
+  tasks:
+
+    - name: Print out nested fact
+      debug:
+        var: ansible_device_links.uuids.vda1

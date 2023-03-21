@@ -1,0 +1,16 @@
+---
+#user 'groups' var in a playbook
+- hosts: all
+  gather_facts: no
+
+  tasks:
+    - name: Loop through the group
+      debug:
+        msg: "{{ item }}"
+      with_items: "{{ groups['webservers'] }}"
+      run_once: True
+
+    - name: Write a message if server belongs to webservers
+      debug:
+         msg: "Server {{ inventory_hostname }} belongs to webservers group"
+      when: '"webservers" in group_names'

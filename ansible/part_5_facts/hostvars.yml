@@ -1,0 +1,23 @@
+---
+#using hostvars
+- hosts: all
+  
+  tasks:
+  - name: Create a temp file
+    file:
+      state: touch
+      name: /home/work/temp.txt
+    delegate_to: localhost
+
+  - name: Store gateway and genmask of another server in the /tmp/hosts file
+    lineinfile:
+      path: /home/work/temp.txt
+      line: "{{ hostvars['node02']['inventory_hostname'] }} ansible_host={{ hostvars['node02']['ansible_host'] }} OS={{ hostvars['node02']['ansible_distribution'] }}" 
+    delegate_to: localhost
+
+  - name: Lookup this file
+    vars: 
+       host_info: "{{ lookup('file', '/home/work/temp.txt') }}"
+    debug:
+      msg: "{{ host_info }}"
+    run_once: true
