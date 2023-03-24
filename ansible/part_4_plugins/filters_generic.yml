@@ -1,0 +1,40 @@
+---
+#int, string, bool, list, mandatory, default
+- hosts: all
+  
+  vars:
+    - user_list: ["sammy", "tom", "brian"]
+    - bool: "true"
+    - letters: "abcde"  
+  
+  tasks:
+  - name: Check space on vda1
+    shell: df | grep /dev/vda1 | awk '{ print $2 }' 
+    register: vda1
+    failed_when: vda1.stdout | int < 5000000
+
+  - name: Convert a string into a list and bool into bool
+    set_fact:
+      letters_list: letters | list
+      bool_bool: bool | bool
+
+  - name: Create files for users
+    file:
+      path: "/tmp/{{ item.0 }}-{{ item.1 }}"
+      state: touch
+    loop: "{{ user_list | product(letters) | list }}"
+
+  - name: check what I get with those lists
+    debug:
+      var: user_list | product(letters) | list
+
+  - name: Launch a job on tower
+    uri:
+     url: "{{ URL | mandatory }}"
+     timeout: 200
+     user: "{{ username | default('admin') }}"
+     password: "{{ password | mandatory }}"
+     body_format: json
+     method: POST
+     return_content: "{{ bool }}"
+    run_once: true

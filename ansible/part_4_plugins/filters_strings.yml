@@ -1,0 +1,24 @@
+---
+#lower, upper, capitalize, b64encode/b64decode, quote
+- hosts: localhost
+  vars:
+    - sentence: it is Going to RaiN Today
+
+  tasks:
+    - name: Try out capitalization
+      debug:
+        msg:
+          - "{{ sentence | capitalize }}"
+          - "{{ sentence | upper }}"
+          - "{{ sentence | lower }}"
+
+    - name: Encode this string
+      set_fact:
+        decoding: "{{ sentence | b64encode(encoding='utf-16-le') }}"
+
+    - name: Decode this string
+      debug:
+        var: decoding | string | b64decode(encoding='utf-16-le')
+
+    - name: Add quotes
+      shell: echo {{ sentence | quote }} > ./log.txt 

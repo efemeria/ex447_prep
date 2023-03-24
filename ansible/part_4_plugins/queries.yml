@@ -1,0 +1,32 @@
+---
+#use queries
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: Lookup hosts
+    debug:
+      msg: "{{ item }}" 
+    loop: "{{ lookup('inventory_hostnames', 'all', wantlist=True) }}"
+
+  - name: Query hosts 
+    debug:
+      msg: "{{ item }}"
+    loop: "{{ query('inventory_hostnames', 'all') }}"
+
+  - name: Lookup a file, loop through contents
+    debug:
+      msg: "{{ item }}"
+    loop: "{{ list01.split(',') }}"
+    vars:
+       list01: "{{ lookup('file', './vars_files/list') }}"
+
+  - name: Do the same with with_items
+    debug:
+      msg: "{{ item }}"
+    with_items: "{{ query('inventory_hostnames', 'all') }}"
+
+  - name: Query varnames
+    debug:
+      msg: "{{ item }}"
+    loop: "{{ query('varnames', 'hosts') }}"

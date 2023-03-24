@@ -1,0 +1,37 @@
+---
+#replace, regex_findall, regex_search, regex_replace
+- hosts: localhost
+  become: yes
+  
+  tasks:
+  - name: Look for a regex match in a file
+    debug:
+      msg: "{{ lookup( 'file', './vars_files/website') | regex_search('language') }}"  
+
+  - name: Search for the same thing but do it in case insensitive mode and multiline
+    debug:
+       msg: "{{ lookup( 'file', './vars_files/website') | regex_search('language', multiline=True, ignorecase=True) }}"
+
+  - name: Do more regex
+    debug:
+      msg:
+        - "{{ lookup( 'file', './vars_files/website') | regex_search('ISO [0-9]{4}') }}"
+        - "{{ lookup( 'file', './vars_files/website') | regex_findall('Gloss([a-zA-Z]*)', multiline=True) }}"
+
+  - name: Copy website file
+    copy:
+      src: ./vars_files/website
+      dest: ./vars_files/website2
+
+  - name: Replace instances of certain words with regex in a file
+    lineinfile:
+      path: ./vars_files/website2
+      regexp: 'mark[a-zA-Z]*'
+      line: "standup"
+
+  - name: Replace instance of a certain word with regex replace
+    debug:
+      msg:
+        - "{{ 'regex_sentence_sentence' | regex_replace('sentence') }}"
+        - "{{ 'regex_sentence_sentence' | regex_replace('sentence', 'word') }}"
+        - "{{ 'regex_sentence_sentence' | replace('sentence', 'word') }}"

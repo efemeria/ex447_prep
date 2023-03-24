@@ -1,0 +1,55 @@
+---
+#Using data filters; json_query, to_json, to_yaml, to_nice_json, to_nice_yaml
+- hosts: localhost
+  become: yes
+
+  vars_files:
+    - vars_files/users
+    - vars_files/ini_var
+    - vars_files/website
+
+  tasks: 
+  - name: Get JSON information from Tower
+    uri:
+      url: "{{ url }}"
+      method: GET
+      timeout: 50
+      user: "{{ user }}"
+      password: "{{ password }}"
+      headers:
+        content-type: application/json
+      return_content: true
+      validate_certs: no
+      force_basic_auth: yes
+      status_code: [ 200, 201 ]
+    register: json
+
+  - name: query website
+    set_fact:
+      id: "{{  json | json_query(jmesquery) }}"
+    vars:
+      jmesquery: 'json.results[*].id'
+
+  - name: debug
+    debug:
+      msg: "{{ id | string | from_json }}"
+
+  - name: Create a file
+    file:
+      path: /home/work/json
+      state: touch
+
+  - name: Turn json data into yaml
+    lineinfile:
+      path: /home/work/json
+      line: "{{ topping  | to_nice_yaml }}"
+
+  - name: aaand another file
+    file:
+      path: /home/work/yaml
+      state: touch
+
+  - name: Get a user list, turn it into yaml and store it here
+    lineinfile:
+      path: /home/work/yaml
+      line: "{{ usernames | to_nice_json }}"

@@ -1,0 +1,33 @@
+---
+- hosts: localhost
+  become: yes
+  gather_facts: no
+
+  tasks:
+  
+  - name: Gather Tower data
+    uri:
+      url: "{{ url }}"
+      method: GET
+      timeout: 50
+      user: "{{ user }}"
+      password: "{{ password }}"
+      headers:
+        content-type: application/json
+      force_basic_auth: true
+      validate_certs: no
+      return_content: yes
+      status_code: [ 200, 201 ]
+    register: json
+
+  - name: Get dem data
+    debug:
+      msg: "{{ json | json_query(jmesquery) | string }}"
+    vars:
+      jmesquery: 'json.results[*].id'
+
+  - name: Get dem data again
+    debug: 
+      msg: "{{ json | json_query(jmesquery) | string }}"
+    vars:
+      jmesquery: 'json.results[2].{Name: name}'

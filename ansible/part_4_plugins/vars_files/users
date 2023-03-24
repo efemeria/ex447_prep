@@ -1,0 +1,15 @@
+usernames:
+   user1:
+     username=user_01
+     password=pass
+     secret_key=12345
+
+   sam:
+     username=this
+     password=that
+     secret_key=88006
+
+   tom:
+     username=user_03
+     password=password
+     secret_key=00000

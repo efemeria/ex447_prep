@@ -1,0 +1,46 @@
+---
+# max, min, sum, first, last, length, random, reverse, sort, unique, flatten, union, difference, intersect, select
+- hosts: localhost
+  gather_facts: no
+
+  vars:
+    - sequence: [7, 5, 9, 15, 47, 2]
+    - sequence2: [[2, 6], [52, 4, 5], [87, 14, 9]]
+    - sequence3: [5, 32, 8, 4, 4, 9]
+    - sentence: I have two pairs of shoes
+
+  tasks:
+
+    - name: Get minimum and max values of the list
+      debug:
+        msg: "maximum value of the list is {{ sequence | max }} and the minimum value is {{ sequence | min }} and the sum of it is {{ sequence | sum }} and the length of it is {{ sequence | length }}"
+
+    - name: first and last
+      debug:
+        msg: "{{ sentence | first }} like {{ sentence | last }}tuff"
+
+    - name: Return a sentence in reverse
+      debug:
+        var: sentence | reverse
+
+    - name: Get a random number
+      debug:
+        var: sequence | random
+
+    - name: Flatten a sequence, loop through it
+      debug:
+        var: item
+      with_items: "{{ sequence2 | flatten(levels=1) }}"
+#1 is default anyways, so this is just an example of levels
+
+    - name: Sort the sentence
+      debug:
+        var: sentence | sort
+
+    - name: Join two lists, get unique list from them
+      debug:
+        var: sequence | union(sequence3) | unique
+
+    - name: Get their diff and uninion
+      debug:
+        msg: "The difference of two lists is {{ sequence | difference(sequence3) }} and their union is {{ sequence | union(sequence3) }} and their intersection is is {{ sequence | intersect(sequence3) }}"

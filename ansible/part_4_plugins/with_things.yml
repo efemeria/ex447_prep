@@ -1,0 +1,44 @@
+---
+#with_fileglob, with_nested, with_together, with_lines, with_file
+- hosts: localhost
+  
+  tasks:
+  - name: test out nesting
+    debug:
+      msg: "{{ item }}"
+    with_nested:
+    - ['yellow', 'blue', 'black']
+    - ['dress', 'shoes']
+
+  - name: Create a work directory
+    file:
+      state: directory
+      path: /home/work/
+    delegate_to: node01
+
+  - name: Copy templates with fileglob
+    template:
+      src: "{{ item }}"
+      dest: "/home/work/{{ item | basename }}"
+    with_fileglob: "./templates/*"
+    delegate_to: node01
+    ignore_errors: true
+
+  - name: Test out with_together
+    debug:
+      msg: "{{ item }}"
+    with_together:
+    - ['yellow', 'blue', 'black']
+    - ['dress', 'shoes']
+
+  - name: Loop over lines
+    debug:
+      var: item
+    with_lines: cat ./vars_files/haiku
+
+  - name: Loop through files and print out their content
+    debug:
+      var: item
+    with_file:
+       - ./vars_files/haiku
+       - ./vars_files/list  

@@ -1,0 +1,70 @@
+---
+#use filters and plugins with network data specifically
+- hosts: localhost
+  become: yes
+
+  tasks:
+  - name: Make sure that netaddr is installed
+    yum:
+      name: python-netaddr
+      state: latest
+
+  - name: Make sure that ansible.utils collection is present if Ansible version is 2.9 or above
+    command: ansible-galaxy collection install ansible.utils
+    when: ansible_version >= 2.9
+
+  - name: Inspect IP address
+    debug:
+      msg:
+      - "{{ item | ipaddr }}"
+      - "{{ item | ipaddr('network') }}"
+      - "{{ item | ipv4 }}"
+      - "{{ item | ipv6 }}"
+      - "{{ item | ipv4('address') }} and {{ item | ipaddr('net') }}"
+      - "Private? {{ item | ipaddr('private') }} Public? {{ item | ipaddr('public') }}"
+    with_items:
+    - "10.0.300.78"
+    - "2001:db8:0:0:0:0:2:1"
+    - "195.45.16.0/24"
+    - "14.5"
+
+  - name: Filter a list to get only valid ips
+    debug:
+      msg: "{{ ip_list | ipaddr | ipwrap }}"
+    vars:
+      ip_list: ['::1', '147.568.544.1', 'cat', '10::4', '47582', '192.168.32.0/24']
+
+  - name: Inspect a range
+    debug:
+      msg:
+      - "{{ my_network | ipaddr('5') }}"
+      - "{{ '192.168.32.1' | ipaddr(my_network) }}"
+      - "{{ my_network | ipaddr('size') }}"
+      - "{{ network_prefix | ipaddr('network/prefix') }}"
+      - "{{ my_network | ipaddr('range_usable') }}"
+    vars:
+      my_network: 192.168.32.0/24
+      network_prefix: "{{ ansible_default_ipv4.address }}/{{ ansible_default_ipv4.netmask }}"
+  
+  - name: Convert ipv4 address into ipv6
+    debug:
+      msg: "{{ '192.168.32.1' | ipv4('ipv6') }}"
+
+  - name: do some ip math on ipv6
+    debug:
+      msg:
+      - "{{ '2001:db8:0:0:0:0:2:1' | ipmath(-15) }}"
+      - "{{ '2001:db8:0:0:0:0:2:1' | ipmath(12) }}"
+
+  - name: Manipulate subnet
+    debug:
+      msg:
+      - "{{ my_subnet | ipsubnet }}"
+      - "{{ my_subnet | ipsubnet(20) }}"
+      - "{{ my_subnet | ipsubnet(20, -1) }}"
+    vars:
+      my_subnet: '156.7.0.0/24'
+
+  - name: filter MAC address
+    debug:
+      var: ansible_eth1.macaddress | hwaddr

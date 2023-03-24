@@ -1,0 +1,27 @@
+    bands:
+      - name: The Beatles
+        drums: Ringo Star
+        bass: Paul McCartney
+        guitar:
+          - George Harrison
+          - John Lennon
+        vocals:
+          - John Lennon
+          - Paul McCartney
+          - George Harrison
+          - Ringo Star
+      - name: The Police
+        drums: Stewart Copeland
+        bass: Sting
+        guitar: Andy Summers
+        vocals: Sting
+      - name: Rush
+        drums: Neil Peart
+        bass: Geddy Lee
+        guitar: Alex Lifeson
+        vocals: Geddy Lee
+      - name: Led Zeppelin
+        drums: John Bonham
+        bass: John Paul Jones
+        guitar: Jimmy Page
+        vocals: Robert Plant

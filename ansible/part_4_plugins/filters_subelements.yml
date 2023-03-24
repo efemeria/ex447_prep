@@ -1,0 +1,27 @@
+---
+#use subelement filter and lookup plugin
+- hosts: all
+  gather_facts: no
+
+  vars_files: ./vars_files/subelements
+
+  tasks:
+  - name: Use subelement filter
+    set_fact:
+      subelemented: "{{ users | subelements('groups') }}"
+
+  - name: Create a users and add them to groups
+    user:
+      name: "{{ item.0.name }}"
+      groups: "{{ item.1 }}"
+    loop: "{{ subelemented }}"
+    ignore_errors: true
+
+  - name: Do the same thing again but with a lookup
+    user:
+      name: "{{ item.0.name }}"
+      groups: "{{ item.1 }}"
+    with_subelements:
+      - "{{ users }}"
+      - groups
+    ignore_errors: true

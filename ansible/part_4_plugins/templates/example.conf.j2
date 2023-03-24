@@ -1,0 +1,23 @@
+[Unit]
+Description=ROT13 demo service
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+{% if inventory_hostname == 'node01' %}
+User=centos
+{% else %}
+User=redhat
+{% endif %}
+ExecStart=/usr/bin/env php /path/to/server.php
+
+[Install]
+WantedBy=multi-user.target
+
+#nonsense stuff for testing out
+#[recognized_ips]
+{% for ip in groups['webservers'] %}
+#{{ ip }}={{ ansible_hostname }} {{ gateway if gateway is defined else '' }}
+{% endfor %}

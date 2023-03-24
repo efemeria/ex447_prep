@@ -1,0 +1,119 @@
+---
+#template, env, pipe, lines, url, password, dig, vars, dict, csvfile, varnames, fileglob
+- hosts: all
+  become: yes
+
+  vars:
+    users:
+      Kate:
+        username: cathy_01
+        ID: 1497253
+      Sam:
+        username: user_sam
+        ID: 5762852
+
+  tasks:
+
+  - name: Create a directory for files
+    file:
+      state: directory
+      path: /home/variables/
+
+  - name: Copy variable files into remote nodes
+    copy:
+      src: "{{ item }}"
+      dest: "/home/variables/{{ item | basename }}"
+    with_fileglob: "./vars_files/*"
+
+  - name: lookup a template result
+    debug:
+      msg: "{{ lookup('template', './templates/config.j2') }}"
+
+  - name: Retrieve contents from URL
+    debug:
+      msg: "{{ lookup('url', 'https://whatthecommit.com/index.txt') }}"
+
+  - name: Lookup current user
+    set_fact:
+      current_user: "{{ lookup( 'env', 'USER', default='nobody') }}"
+
+  - name: Create a file owned by it
+    file:
+      path: /home/variables/file
+      state: touch
+      owner: "{{ current_user }}"
+
+  - name: Set a password variable
+    set_fact:
+      password: "{{ lookup('password', '/dev/null', length=12, chars=['ascii_letters']) }}"
+
+  - name: Create user with this password
+    user:
+      name: secret_user
+      password: "{{ password | password_hash('sha256') }}"
+      groups: lab
+
+  - name: Get raw result from pipe
+    debug:
+      msg: 
+#      - "{{ lookup('pipe', 'getent aliases ' + current_user | quote) }}"
+      - "{{ lookup('pipe', 'whoami') }}"
+
+  - name: Query DNS for various domains
+    debug:
+      msg:
+      - "{{ lookup('dig', 'google.com') }}"
+      - "{{ lookup('dig', 'gmail.com/TXT', flat=0, wantlist=True) }}"
+  
+  - name: Lookup vars
+    debug:
+       msg: "{{ lookup('vars', 'ansible_play_' + item, default='') }}"
+    loop:
+      - hosts
+      - batch
+      - secret
+
+  - name: Lookup dict
+    debug:
+      msg: "The username is {{ item.value.username }} and ID is {{ item.value.ID }}"
+    loop: "{{ lookup('dict', users) }}"
+    
+  - name: Same, but use with_dict
+    debug:
+      msg: "The username is {{ item.value.username }} and ID is {{ item.value.ID }}"
+    with_dict: "{{ users }}"
+
+  - name: Same, but without looking up dict
+    debug:
+      msg:
+      - "The username is {{ users.Sam.username }} and ID is {{ users.Sam.ID }}"
+      - "{{ lookup('dict', users) }}" 
+
+  - name: Lookup available matching variables
+    debug:
+      msg:
+      - "{{ lookup('varnames', '.+') }}"
+      - "{{ lookup('varnames', 'all') }}"
+      - "{{ lookup('varnames', '^ansible_.+') }}"
+        
+  - name: Lookup vars from csvfile
+    set_fact:
+      source_group: "{{ lookup('csvfile', 'a file=./templates/asa_rules.csv delimiter=, col=1') }}"
+      src_1: "{{ lookup('csvfile', 'a file=./templates/asa_rules.csv delimiter=, col=2') }}"
+      src_2: "{{ lookup('csvfile', 'a file=./templates/asa_rules.csv delimiter=, col=3') }}"
+      destination_group: "{{ lookup('csvfile', 'a file=./templates/asa_rules.csv delimiter=, col=4') }}"
+      dst_1: "{{ lookup('csvfile', 'a file=./templates/asa_rules.csv delimiter=, col=5') }}"
+      dst_2: "{{ lookup('csvfile', 'a file=./templates/asa_rules.csv delimiter=, col=6') }}"
+      change_number: "{{ lookup('csvfile', 'a file=./templates/asa_rules.csv delimiter=, col=7') }}"
+    tags: csv
+
+  - name: Populate template
+    template:
+      src: ./templates/asa_rules.j2
+      dest: /home/csv_template
+    tags: csv    
+
+  - name: lines
+    debug:
+      msg: "{{ item }}"
+    with_lines: cat /etc/network/interfaces

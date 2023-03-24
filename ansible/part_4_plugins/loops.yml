@@ -1,0 +1,39 @@
+---
+# difference between loops and with_items
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+
+  - name: Use with_items
+    debug:
+      var: item
+    with_items:
+      - 12
+      - [14, 47]
+
+  - name: use a loop
+    debug:
+      var: item
+    loop: "{{ [12, [14, 47]] | flatten }}"
+
+  - name: also same outcome - with_flattened
+    debug:
+      var:
+    with_flattened:
+      - 12
+      - [14, 47]
+
+  - name: loop over a dictionary
+    debug:
+      msg: "{{ item.value }}, {{ item.key }}"
+    loop: "{{ data | dict2items }}"
+    vars:
+      data:
+        Rose: 479851
+        Kathy: 487852
+
+  - name: loop over a nested list
+    debug:
+      msg: "{{ item[0] }}, {{ item[1] }}"
+    loop: "{{ ['alice', 'bob'] | product(['password', 'username', 'id']) | list }}"

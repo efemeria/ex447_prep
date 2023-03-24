@@ -1,0 +1,14 @@
+users:
+- name: Rose
+  groups: 
+  - wheel
+  - random
+- name: Steven
+  groups:
+  - wheel
+  - lab
+  - students
+- name: Tom
+  groups:
+  - students
+  - lab

@@ -1,0 +1,4 @@
+#Taken from https://raw.githubusercontent.com/colin-mccarthy/ansible_csv
+
+asa_rule,source_group,src_1,src_2,destination_group,dst_1,dst_2,change_number
+a,SourceGroup,1.1.1.1,1.1.1.2,destinationgroup,2.2.2.1,2.2.2.2,CHG12345 

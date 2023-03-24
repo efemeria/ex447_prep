@@ -1,0 +1,45 @@
+#combine, dict2items, items2dict
+- hosts: localhost
+  gather_facts: no
+
+  vars:
+    animals:
+       fish: dolphin
+       mammal: lion
+       bird: chicken
+    animals2: [ {'key': 'mammal', 'value': 'cat'}, {'key': 'mammal', 'value': 'dog'}, {'key': 'bird', 'value': 'parrot'} ]
+
+  vars_files:
+    - ./vars_files/dictionary
+
+  tasks:
+
+  - name: Transform a dictionary into a list
+    set_fact:
+      animal_list: "{{ animals | dict2items(key_name='class', value_name='species') }}"
+
+  - name: Loop through them
+    debug:
+      msg: "{{ item.species }}"
+    with_items: "{{ animal_list }}"
+
+  - name: Merge two dictionaries
+    set_fact: 
+      mega_dict: "{{ animals | combine(bands[2]) }}"
+
+  - name: Print it
+    debug:
+      var: mega_dict
+
+  - name: Add an item to the list
+    set_fact:
+      animals2: "{{ animals2 + [{'key': 'mammal', 'value': 'pig'}] }}"
+
+  - name: Set fact
+    set_fact:
+      list_bands: "{{ animals2 | items2dict(key_name='key', value_name='value') }}"
+
+  - name: Print it
+    debug:
+      var: list_bands
+ 

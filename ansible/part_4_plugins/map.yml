@@ -1,0 +1,17 @@
+---
+#using map filter
+- hosts: localhost
+  gather_facts: no
+
+  vars_files: ./vars_files/users
+  vars:
+    guys: [{'username_': 'sam', 'id': '48576'}, {'username_': 'authy', 'id': '00076'}, {'username_': 'danny0', 'id': '56623'}]
+
+  tasks:
+  - name: map users by their usernames
+    debug:
+      msg: "{{ guys | map(attribute='username_') | list | join('>') }}"
+
+  - name: Extract attributes for specific user
+    debug:
+      msg: "{{ ['user1'] | map('extract', usernames) | list }}"

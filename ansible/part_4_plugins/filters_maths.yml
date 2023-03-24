@@ -1,0 +1,27 @@
+---
+#pow, log, root, abs
+- hosts: localhost
+  gather_facts: no
+
+  vars: 
+    - number01: 36
+    - number_list: [12, 36, 77]
+  
+  tasks:
+  - name: Loop through servers, get their power
+    debug:
+      msg: "{{ item | pow(5) }}"
+    loop: "{{ number_list }}"
+
+  - name: Get a root of a number
+    set_fact:
+      number02: "{{ number01 | root(2) }}"
+
+  - name: Get a log
+    debug:
+      msg: "{{ 36 | log(6) }}"
+
+  - name: Test out abs
+    debug:
+      msg: "{{ '-36.2' | int | abs }}"
+    
