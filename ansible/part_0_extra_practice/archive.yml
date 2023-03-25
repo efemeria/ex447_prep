@@ -1,0 +1,34 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+  - name: Download Tower tar file
+    get_url:
+      url: https://releases.ansible.com/ansible-tower/setup/ansible-tower-setup-latest.tar.gz
+      dest: /home/work/ansible-tower-setup-latest.tar.gz
+
+  - name: Unarchive the tar file
+    unarchive:
+      src: /home/work/ansible-tower-setup-latest.tar.gz
+      dest: /home/work/
+      
+  - name: Archive log files
+    archive:
+      path: /var/log/
+      dest: /var/log/log_archive.tar.gz
+      format: gz
+
+  - name: Fetch them to localhost
+    fetch:
+      src: /var/log/log_archive.tar.gz
+      dest: /home/work/log_archive.tar.gz
+      flat: yes
+
+  - name: Unarchive logs
+    unarchive:
+      src: /home/work/log_archive.tar.gz
+      dest: /home/work/
+      owner: root
+      group: root
+    delegate_to: localhost

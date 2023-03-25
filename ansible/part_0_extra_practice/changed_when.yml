@@ -1,0 +1,17 @@
+---
+- hosts: all
+  gather_facts: no
+
+  tasks:
+    - name: Test Apache configuration
+      command: apachectl -t
+      register: apache_command
+      changed_when: "'OK' not in apache_command.stderr"
+      notify: restart_apache
+
+  handlers:
+    - name: Restart apache
+      service:
+        name: httpd
+        state: restarted
+      listen: restart_apache

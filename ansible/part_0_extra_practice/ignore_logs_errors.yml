@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+  - name: Create a file in just one node
+    file:
+      state: touch
+      path: /home/work/line
+    delegate_to: node01
+
+  - name: Write a line in file if it exists
+    lineinfile:
+      path: /home/work/line
+      line: "this file exists"
+    ignore_errors: true
+
+  - name: Same but fail if one server doesn't have this file
+    lineinfile:
+      path: /home/work/line
+      line: "this file truly exists"
+    any_errors_fatal: true
+
+  - debug:
+      msg: "This task will probably never be reached"

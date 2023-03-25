@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+
+  tasks:
+
+  - name: Setup firewalld
+    yum:
+      name: firewalld
+      state: latest
+
+  - name: Enable it on boot
+    service:
+      name: firewalld
+      enabled: yes
+      state: started
+
+  - name: Enable http on firewalld
+    firewalld:
+      service: http
+      permanent: yes
+      state: enabled
+
+  - name: Restart firewalld
+    service:
+      service: firewalld
+      state: restarted

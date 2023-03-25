@@ -1,0 +1,11 @@
+---
+# using vault inside of playbooks
+- hosts: all
+
+  vars_files: ./vault/secure  
+
+  tasks:
+  - name: Create a user with password from vault
+    user:
+      name: my_user
+      password: "{{ password }}"

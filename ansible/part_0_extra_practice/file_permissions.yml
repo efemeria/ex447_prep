@@ -1,0 +1,18 @@
+---
+- hosts: all
+  gather_facts: no
+
+  tasks:
+  - name: Create a work directory with a sticky bit
+    file:
+      path: /home/work/work2/
+      state: directory
+      owner: sam
+      group: lab
+      mode: 1700
+
+  - name: Create a file that could be read by everyone
+    file:
+      path: /home/work/text.txt
+      state: touch
+      mode: 0004

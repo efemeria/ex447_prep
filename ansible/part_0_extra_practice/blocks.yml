@@ -1,0 +1,31 @@
+---
+- hosts: all
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: Fetch a file
+      block:
+        - fetch:
+            src: /home/work/file_example
+            dest: /home/work/file_example
+      rescue:
+        - debug:
+            msg: "File doesn't exist"
+      always:
+        - debug:
+            msg: "Block is done"
+
+    - name: Upgrade all packages
+      block:
+        - yum:
+            name: "*"
+            state: latest
+        - systemd:
+            daemon_reload: true
+      rescue:
+        - yum:
+            autoremove: yes
+      always:
+        - yum:
+            update_cache: yes

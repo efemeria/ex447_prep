@@ -1,0 +1,14 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Move haiku to nodes
+    copy:
+      src: ./files/haiku
+      dest: /home/work/haiku02
+
+  - name: Replace all instances of world
+    replace:
+      path: /home/work/haiku02
+      regexp: 'world'
+      replace: 'cat'

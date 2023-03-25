@@ -1,0 +1,21 @@
+---
+#difference between copy, template and fetch
+- hosts: all
+  become: yes
+
+  tasks:
+  - name: Transfer a template to remote server
+    template:
+      src: ./templates/example.j2
+      dest: /home/work/template_example
+
+  - name: Copy a file to remote server
+    copy:
+      src: ./files/example
+      dest: /home/work/file_example
+
+  - name: Fetch a file from remote system
+    fetch:
+      src: /home/work/template_example
+      dest: /home/work/ex477_prep/
+      flat: yes

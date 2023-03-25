@@ -1,0 +1,14 @@
+---
+#practice cron module
+- hosts: all
+  become: yes
+  gather_facts: no
+
+  tasks:
+  - name: restart Apache once a week
+    cron:
+      name: "check dirs"
+      minute: "0"
+      hour: "17"
+      weekday: "2"
+      job: "systemctl restart httpd"

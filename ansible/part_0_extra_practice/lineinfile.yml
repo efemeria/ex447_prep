@@ -1,0 +1,19 @@
+---
+#use lineinfile with more complicated features
+- hosts: all
+  become: yes
+
+  tasks:
+  - name: Edit visudo file to include lab group
+    lineinfile:
+      path: /etc/sudoers
+      state: present
+      insertafter: '^%ADMIN ALL='
+      line: '%lab ALL=(ALL) NOPASSWD: ALL'
+      validate: /usr/sbin/visudo -cf %s
+
+  - name: Replace a word in a file
+    lineinfile:
+      path: /home/work/file_example
+      regexp: '^Hello'
+      line: 'Hi world'

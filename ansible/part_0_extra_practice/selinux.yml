@@ -1,0 +1,39 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+
+  - name: Install Apache and sftp
+    yum:
+      name:
+        - vsftpd
+        - httpd
+      state: latest
+
+  - name: Start and enable Apache
+    service:
+      name: httpd
+      enabled: yes
+      state: started
+
+  - name: Start and enable sftp
+    service:
+      name: vsftpd
+      enabled: yes
+      state: started
+
+  - name: Install Selinux packages
+    yum:
+      name:
+        - policycoreutils
+        - mcstrans
+        - setools-console
+        - setools
+        - setroubleshoot-server
+      state: latest
+
+  - name: Enable Selinux
+    selinux:
+      policy: targeted
+      state: enforcing
