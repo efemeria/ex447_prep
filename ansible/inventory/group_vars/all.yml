@@ -1,0 +1,6 @@
+---
+#a var for all servers
+package_dependencies:
+  - httpd
+  - firewalld
+  - selinux

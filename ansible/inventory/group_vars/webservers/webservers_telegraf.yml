@@ -1,0 +1,3 @@
+telegraf:
+  buffer: 9000
+  database: aws

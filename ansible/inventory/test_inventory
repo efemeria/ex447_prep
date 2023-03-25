@@ -1,7 +1,6 @@
-server_main.example.com
+[webservers]
+node01 ansible_host=# gateway=# netmask=255.255.240.0
+node02 ansible_host=#
 
-[group1]
-server[01:03].example.com
-
-[group2]
-another.test.com
+[webservers:vars]
+colour=pink

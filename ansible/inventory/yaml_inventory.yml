@@ -1,0 +1,23 @@
+---
+all:
+  hosts: 
+    example.com
+  children:
+    webservers:
+      hosts:
+        node01
+        node02
+      vars: 
+        http_port: 8000
+    testservers:
+      hosts:
+        node02
+        node03
+      children:
+        moreservers:
+          hosts:
+            node02:
+              vars: 
+                ansible_host: someip
+          vars:
+            my_var: b

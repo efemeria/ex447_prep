@@ -1,0 +1,3 @@
+---
+ansible_host: 2.2.2.3
+state: decommissioning

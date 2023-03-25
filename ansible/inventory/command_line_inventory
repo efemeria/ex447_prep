@@ -1,0 +1,26 @@
+all:
+  children:
+    ungrouped: {}
+    webservers:
+      hosts:
+        node01:
+          ansible_host: 2.2.2.2
+          ansible_port: 22
+          colour: pink
+          gateway: 165.232.64.1
+          netmask: 255.255.240.0
+          package_dependencies: &id001
+          - httpd
+          - firewalld
+          - selinux
+          state: test
+          telegraf: &id002
+            buffer: 9000
+            database: aws
+        node02:
+          ansible_host: 2.2.2.3
+          ansible_port: 22
+          colour: pink
+          package_dependencies: *id001
+          state: decommissioning
+          telegraf: *id002
