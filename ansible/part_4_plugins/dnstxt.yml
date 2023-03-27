@@ -1,0 +1,17 @@
+---
+#try out dnstxt plugin
+- hosts: localhost
+  gather_facts: no
+
+  tasks:
+  - name: try out dnstxt on google
+    debug:
+      msg: "{{ lookup('dnstxt', 'google.com') }}"
+
+  - name: try out a loop
+    debug:
+      var: item
+    with_dnstxt:
+      - 'youtube.com'
+      - 'stackoverflow.com'
+      - 'redhat.com'

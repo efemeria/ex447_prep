@@ -1,0 +1,20 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+  - name: add lab group to sudoers
+    lineinfile:
+      path: /etc/sudoers
+      state: present
+      regexp: '^%lab ALL='
+      line: '%lab ALL=(ALL) NOPASSWD: ALL'
+      validate: /usr/sbin/visudo -cf %s
+
+  - name: add sam to sudeors and allow to use lxd
+    lineinfile:
+      path: /etc/sudoers
+      state: present
+      regexp: '^sam ALL='
+      line: 'sam ALL=(root) NOPASSWD: /usr/bin/lxd'
+      validate: /usr/sbin/visudo -cf %s

@@ -1,0 +1,76 @@
+---
+#selctattr, type_debug, undef, ternary, zip_longest, dict, permutations, combinations, checksum, urlencode, urlsplit, dirname, splitext
+- hosts: localhost
+  gather_facts: no
+
+  vars:
+     users:
+      - username: Ted01
+        password: password1
+      - username: Sammy_user
+        password: password2
+      - name: Cathy
+        password: secret
+     list1: ['1', '19', '87', '2', '2', '12']
+     list2: ['65', '12', '9', '1', '2']
+     demo_var: "{{ undef(hint='Provide a var') }}"
+     test_ternary: True
+     test_url: https://github.com/efemeria/ex477_prep/blob/main/README.md
+
+  tasks:
+    - name: Check the data type of our variable
+      debug:
+        msg: "{{ users | type_debug }} and {{ users[0] | type_debug }}"
+
+    - name: Select attributes
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ users | selectattr('username', 'defined') | list }}"
+
+    - name: Select attributes
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ users | selectattr('password', 'match', 'secret') | list }}"
+
+    - name: Zip with longest possible values
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ list1 | zip_longest('list2', fillvalue='0') | list }}"
+
+    - name: Test demo variable
+      debug:
+        msg:
+          - "{{ demo_var }}"
+          - "{{ demo_var | checksum }}"
+
+    - name: Test ternary
+      debug:
+        msg: "{{ test_ternary | ternary('is_true', 'is_false', 'is_none') }}" 
+
+    - name: Get directory name
+      debug: 
+        msg: "{{ '/home/tmp/var' | dirname }}"
+
+    - name: Create a dictionary from lists
+      debug:
+        msg: "{{ dict(list1 | zip(list2)) }}" 
+
+    - name: Play with url
+      debug:
+        msg:
+          - "{{ test_url | urlsplit('hostname') }}"
+          - "{{ test_url | urlsplit('path') }}"
+          - "{{ test_url | splitext | last }}"
+
+    - name: Try out permutations and combinations
+      debug:
+        msg:
+          - "{{ list1 | combinations(2) | list }}"
+          - "{{ list1 | permutations | list }}"
+
+    - name: URL encode some strings
+      debug:
+        var: item
+      with_items:
+        - "Münche"
+        - "GROUP~"

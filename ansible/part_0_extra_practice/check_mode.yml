@@ -1,0 +1,11 @@
+---
+- hosts: all
+  gather_facts: no
+  become: yes
+
+  tasks:
+  - name: Write a line
+    lineinfile:
+      line: "test"
+      path: /home/work/file_example
+    check_mode: true

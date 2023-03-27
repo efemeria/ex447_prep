@@ -1,0 +1,17 @@
+---
+#add ansible to the /etc/hosts file
+- hosts: localhost, webservers
+  become: yes
+
+  tasks:
+  - name: Add ansible to /etc/hosts file
+    lineinfile:
+      line: "{{ hostvars['localhost']['ansible_default_ipv4']['address'] }} {{ hostvars['localhost']['ansible_hostname'] }}"
+      regexp: "^{{ hostvars['localhost']['ansible_hostname'] }}.*" 
+      insertafter: "# The following lines are desirable for IPv4 capable hosts"
+      state: present
+      backup: yes
+      path: /etc/hosts
+    delegate_to: "{{ item }}"
+    loop: "{{ groups['webservers'] }}"
+    run_once: true
