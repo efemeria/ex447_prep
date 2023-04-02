@@ -1,0 +1,34 @@
+---
+#send info to Tower api
+- hosts: localhost
+  become: yes
+  
+  tasks:
+
+  - name: Update info in Tower API
+    uri:
+      url: "https://{{ ansible_hostname }}/api/v2/job_templates/13/"
+      method: PATCH
+      validate_certs: false
+      force_basic_auth: yes
+      user: "{{ tower_user }}"
+      password: "{{ tower_password }}"
+      body_format: json
+      body:
+        ask_skip_tags_on_launch: true
+      status_code: [200]
+      return_content: yes
+
+  - name: Launch a job via URI
+    uri:
+      url: "https://{{ ansible_hostname }}/api/v2/job_templates/13/launch/"
+      method: POST
+      validate_certs: false
+      force_basic_auth: yes
+      user: "{{ tower_user }}"
+      password: "{{ tower_password }}"
+      body_format: json
+      body:
+        extra_vars: "demo_var: demo"
+      status_code: [201, 202]
+      return_content: yes
